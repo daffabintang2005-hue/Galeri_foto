@@ -1,0 +1,573 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>D LOVE D | Galeri Foto Kenangan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fff5eb 0%, #ffe8dc 100%);
+            color: #2d2418;
+            scroll-behavior: smooth;
+        }
+        .hero {
+            height: 100vh;
+            min-height: 650px;
+            background: linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,0,0,0.2)), url('foto1\ \(17\).jpeg') center/cover no-repeat;
+            background-attachment: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+        }
+        .hero-overlay { position: absolute; inset: 0; background: radial-gradient(circle, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%); }
+        .hero-content {
+            position: relative; z-index: 2; backdrop-filter: blur(3px);
+            background: rgba(255, 250, 240, 0.15); padding: 2rem 3.5rem;
+            border-radius: 80px; border: 1px solid rgba(255,245,225,0.6);
+            animation: fadeInUp 1s ease-out; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        .hero h1 {
+            font-family: 'Playfair Display', serif; font-size: 6rem;
+            letter-spacing: 8px; font-weight: 900; color: #fff4e6;
+            text-shadow: 4px 4px 20px rgba(0,0,0,0.4);
+        }
+        .hero p { font-size: 1.2rem; color: #fff0e0; margin-top: 1rem; letter-spacing: 2px; }
+        .scroll-indicator {
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+            color: white; font-size: 2rem; animation: bounce 2s infinite;
+            cursor: pointer; z-index: 3; background: rgba(0,0,0,0.4);
+            width: 45px; height: 45px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center;
+        }
+        .navbar {
+            display: flex; justify-content: center; gap: 2rem;
+            background: rgba(255, 248, 240, 0.96); padding: 0.9rem 2rem;
+            position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px);
+            border-bottom: 1px solid #f0dbc8; flex-wrap: wrap;
+        }
+        .navbar a {
+            text-decoration: none; font-weight: 600; color: #6b4c34;
+            transition: 0.3s; padding: 0.5rem 1.2rem; border-radius: 40px; font-size: 0.95rem;
+        }
+        .navbar a:hover, .navbar a.active { background: #dbbc9b; color: #2c1a0c; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 2rem 2rem 4rem; }
+        .section-title {
+            text-align: center; font-size: 2.5rem; font-family: 'Playfair Display', serif;
+            font-weight: 700; margin-bottom: 0.5rem; color: #7b5a3e;
+        }
+        .title-desc { text-align: center; color: #b4865f; margin-bottom: 2.5rem; }
+        .upload-card {
+            background: rgba(255, 255, 245, 0.85); backdrop-filter: blur(6px);
+            border-radius: 48px; padding: 1.8rem; margin-bottom: 3rem;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.05); border: 1px solid #ffe1ca;
+        }
+        .upload-area {
+            border: 2px dashed #d9b48b; border-radius: 32px; padding: 2rem;
+            text-align: center; transition: all 0.25s; background: #fffcf8;
+        }
+        .upload-area.drag-over { background: #fff2e8; border-color: #c28a5a; }
+        .upload-icon { font-size: 2.8rem; color: #c28a5a; margin-bottom: 0.8rem; }
+        .select-file-btn {
+            background: #c28a5a; border: none; padding: 0.6rem 1.8rem;
+            border-radius: 60px; color: white; font-weight: 600; margin-top: 0.8rem;
+            cursor: pointer; transition: 0.2s; font-size: 0.9rem; display: inline-block;
+        }
+        .select-file-btn:hover { background: #9f6a42; transform: scale(1.02); }
+        .file-input { display: none; }
+        .preview-grid {
+            display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 1.2rem;
+            justify-content: center; min-height: 100px;
+        }
+        .preview-img-wrapper { position: relative; width: 85px; height: 85px; }
+        .preview-img { width: 100%; height: 100%; object-fit: cover; border-radius: 18px; box-shadow: 0 5px 12px rgba(0,0,0,0.1); border: 2px solid white; }
+        .remove-preview {
+            position: absolute; top: -8px; right: -8px; background: #c25b3a;
+            border-radius: 50%; color: white; width: 22px; height: 22px;
+            display: flex; align-items: center; justify-content: center; font-size: 0.7rem;
+            cursor: pointer; transition: 0.2s;
+        }
+        .remove-preview:hover { background: #a03e1f; transform: scale(1.1); }
+        .upload-btn {
+            background: #c28a5a; border: none; padding: 0.8rem 2.2rem;
+            border-radius: 60px; color: white; font-weight: 600; margin-top: 1.2rem;
+            cursor: pointer; transition: 0.2s; font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .upload-btn:hover:not(:disabled) { background: #9f6a42; transform: scale(1.02); }
+        .upload-btn:disabled { background: #d9b48b; cursor: not-allowed; }
+        .gallery {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem; margin-top: 1rem;
+        }
+        .gallery-item {
+            position: relative; border-radius: 28px; overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12); transition: all 0.35s ease;
+            background: #ffffff; cursor: pointer; aspect-ratio: 1 / 1;
+        }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: 0.45s; display: block; }
+        .gallery-item:hover img { transform: scale(1.08); }
+        .overlay-info {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
+            color: white; padding: 1rem; opacity: 0; transition: 0.3s;
+            display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem;
+        }
+        .gallery-item:hover .overlay-info { opacity: 1; }
+        .delete-btn {
+            background: rgba(210, 70, 50, 0.9); border: none; color: white;
+            padding: 5px 12px; border-radius: 30px; font-size: 0.7rem;
+            cursor: pointer; font-weight: 600;
+        }
+        .delete-btn:hover { background: #b11f0e; }
+        .empty-gallery {
+            text-align: center; padding: 4rem; color: #aa8a6e;
+            background: #fffaf3; border-radius: 48px;
+        }
+        .photo-counter {
+            display: inline-block; background: #dbbc9b; padding: 0.3rem 1.2rem;
+            border-radius: 60px; font-size: 0.85rem; margin-bottom: 1rem;
+            color: #3a281c; font-weight: 600;
+        }
+        footer {
+            background: #e7d7c8; text-align: center; padding: 2rem;
+            font-size: 0.9rem; color: #4e3824; margin-top: 2rem;
+        }
+        .modal {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.92);
+            z-index: 1001; align-items: center; justify-content: center; cursor: pointer;
+        }
+        .modal img { max-width: 90%; max-height: 90%; border-radius: 24px; }
+        .close-modal {
+            position: absolute; top: 25px; right: 35px;
+            font-size: 2.8rem; color: white; cursor: pointer;
+        }
+        .loading-spinner {
+            display: inline-block; width: 16px; height: 16px;
+            border: 2px solid #fff; border-radius: 50%; border-top-color: transparent;
+            animation: spin 0.6s linear infinite; margin-right: 8px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        @keyframes bounce {
+            0%,100%{ transform: translateY(0) translateX(-50%);}
+            50%{ transform: translateY(12px) translateX(-50%);}
+        }
+        @media (max-width: 720px) {
+            .hero h1 { font-size: 2.8rem; letter-spacing: 3px; }
+            .hero-content { padding: 1rem 1.8rem; }
+            .container { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <section class="hero" id="home">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>D LOVE D</h1>
+            <div style="color:#fff0e0; margin-top:0.5rem;">setiap foto adalah cerita dari hati eakk</div>
+        </div>
+        <div class="scroll-indicator" onclick="document.getElementById('gallery-start').scrollIntoView({behavior: 'smooth'})">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+
+    <div class="navbar">
+        <a href="#home" class="active">Beranda</a>
+        <a href="#gallery-start">Galeri</a>
+        <a href="#upload-area-section">+ Koleksi Baru</a>
+    </div>
+
+    <div class="container" id="gallery-start">
+        <div class="section-title">✦ Galeri Kenangan ✦</div>
+        <div class="title-desc"><i class="fas fa-heart" style="color:#c28554;"></i> cinta dalam setiap bingkai</div>
+        
+        <div style="text-align: center; margin-bottom: 0.8rem;">
+            <span class="photo-counter" id="photoCounter">Memuat galeri...</span>
+        </div>
+
+        <div class="upload-card" id="upload-area-section">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                <h3 style="margin: 0.5rem 0; color:#6b4c34;">Tambah kenangan baru</h3>
+                <p style="font-size: 0.85rem;">Seret & letakkan foto di sini, atau klik tombol di bawah</p>
+                <button type="button" class="select-file-btn" id="selectFileBtn"><i class="fas fa-folder-open"></i> Pilih Foto</button>
+                <input type="file" id="fileInput" multiple accept="image/jpeg,image/png,image/webp" class="file-input">
+                <div class="preview-grid" id="previewGrid"></div>
+                <button type="button" class="upload-btn" id="confirmUploadBtn"><i class="fas fa-heart"></i> Simpan ke Galeri</button>
+            </div>
+        </div>
+
+        <div id="galleryContainer" class="gallery"></div>
+    </div>
+
+    <footer>
+        <p><i class="fas fa-camera"></i> D LOVE D </p>
+        <p style="margin-top: 0.5rem;">&copy;Daffa Bintang Salimu</p>
+    </footer>
+
+    <div id="imageModal" class="modal">
+        <span class="close-modal">&times;</span>
+        <img id="modalImage" src="" alt="preview">
+    </div>
+
+    <script>
+        // ======================== DATABASE IndexedDB ========================
+        const DB_NAME = 'DLoveDGalleryDB';
+        const DB_VERSION = 1;
+        const STORE_NAME = 'photos';
+
+        let db = null;
+        let currentSelectedFiles = [];
+
+        // Inisialisasi IndexedDB
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                
+                request.onerror = () => {
+                    console.error('Database error:', request.error);
+                    reject(request.error);
+                };
+                
+                request.onsuccess = () => {
+                    db = request.result;
+                    console.log('Database connected');
+                    resolve(db);
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    const database = event.target.result;
+                    if (!database.objectStoreNames.contains(STORE_NAME)) {
+                        const store = database.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                        store.createIndex('dateAdded', 'dateAdded', { unique: false });
+                        console.log('Object store created');
+                    }
+                };
+            });
+        }
+
+        // Tambah foto ke database
+        async function addPhotoToDB(photoData) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.add(photoData);
+                
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // Ambil semua foto dari database
+        async function getAllPhotosFromDB() {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const index = store.index('dateAdded');
+                const request = index.openCursor(null, 'prev'); // terbaru di atas
+                const photos = [];
+                
+                request.onsuccess = (event) => {
+                    const cursor = event.target.result;
+                    if (cursor) {
+                        photos.push(cursor.value);
+                        cursor.continue();
+                    } else {
+                        resolve(photos);
+                    }
+                };
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // Hapus foto dari database
+        async function deletePhotoFromDB(id) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.delete(id);
+                
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // ======================== 20 FOTO DEFAULT ========================
+        const DEFAULT_PHOTOS = [
+            { url: "https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=600", name: "senja_merona" },
+            { url: "https://images.pexels.com/photos/1198802/pexels-photo-1198802.jpeg?auto=compress&cs=tinysrgb&w=600", name: "matahari_terbenam" }
+        ];
+
+        async function seedDefaultPhotos() {
+            const existingPhotos = await getAllPhotosFromDB();
+            if (existingPhotos.length === 0) {
+                console.log('Menambahkan 20 foto default...');
+                for (let i = 0; i < DEFAULT_PHOTOS.length; i++) {
+                    const photo = DEFAULT_PHOTOS[i];
+                    await addPhotoToDB({
+                        dataUrl: photo.url,
+                        name: photo.name,
+                        dateAdded: new Date(Date.now() - (i * 86400000)).toISOString()
+                    });
+                }
+                console.log('20 foto default berhasil ditambahkan');
+            }
+        }
+
+        // ======================== RENDER GALERI ========================
+        async function renderGallery() {
+            const container = document.getElementById('galleryContainer');
+            const counterSpan = document.getElementById('photoCounter');
+            
+            if (!container) return;
+            
+            try {
+                const photos = await getAllPhotosFromDB();
+                
+                if (counterSpan) {
+                    counterSpan.innerHTML = `<i class="fas fa-images"></i> ${photos.length} momen indah • tanpa duplikat`;
+                }
+                
+                if (photos.length === 0) {
+                    container.innerHTML = `<div class="empty-gallery"><i class="fas fa-heart-broken" style="font-size: 3rem;"></i><br/>Belum ada foto, tambahkan kenangan terbaru ✨</div>`;
+                    return;
+                }
+                
+                let html = '';
+                for (const photo of photos) {
+                    const dateStr = new Date(photo.dateAdded).toLocaleDateString('id-ID');
+                    html += `
+                        <div class="gallery-item" data-id="${photo.id}">
+                            <img src="${photo.dataUrl}" alt="${photo.name || 'foto kenangan'}" loading="lazy">
+                            <div class="overlay-info">
+                                <span><i class="far fa-calendar-alt"></i> ${dateStr}</span>
+                                <button class="delete-btn" data-id="${photo.id}"><i class="fas fa-trash-alt"></i> hapus</button>
+                            </div>
+                        </div>
+                    `;
+                }
+                container.innerHTML = html;
+                
+                // Event hapus
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        const id = Number(btn.getAttribute('data-id'));
+                        if (confirm('Hapus momen istimewa ini?')) {
+                            await deletePhotoFromDB(id);
+                            await renderGallery();
+                        }
+                    });
+                });
+                
+                // Event klik untuk lightbox
+                document.querySelectorAll('.gallery-item img').forEach(img => {
+                    img.addEventListener('click', (e) => {
+                        const src = img.getAttribute('src');
+                        openLightbox(src);
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Error rendering gallery:', error);
+                container.innerHTML = `<div class="empty-gallery"><i class="fas fa-exclamation-triangle"></i><br/>Gagal memuat galeri</div>`;
+            }
+        }
+
+        // ======================== UPLOAD FOTO ========================
+        function readFileAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = () => reject(new Error('Gagal membaca file'));
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function refreshPreview() {
+            const previewGrid = document.getElementById('previewGrid');
+            if (!previewGrid) return;
+            
+            previewGrid.innerHTML = '';
+            
+            if (currentSelectedFiles.length === 0) {
+                previewGrid.innerHTML = '<div style="width:100%;text-align:center; font-size:0.8rem; color:#aa7a55;">✨ belum ada foto yang dipilih ✨</div>';
+                return;
+            }
+            
+            currentSelectedFiles.forEach((file, idx) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'preview-img-wrapper';
+                const img = document.createElement('img');
+                img.className = 'preview-img';
+                img.style.objectFit = 'cover';
+                
+                const removeBtn = document.createElement('div');
+                removeBtn.className = 'remove-preview';
+                removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                removeBtn.addEventListener('click', (ev) => {
+                    ev.stopPropagation();
+                    currentSelectedFiles.splice(idx, 1);
+                    refreshPreview();
+                });
+                
+                wrapper.appendChild(img);
+                wrapper.appendChild(removeBtn);
+                previewGrid.appendChild(wrapper);
+                
+                const reader = new FileReader();
+                reader.onload = (e) => { img.src = e.target.result; };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function addFilesToPreview(files) {
+            if (files.length === 0) return;
+            currentSelectedFiles = [...currentSelectedFiles, ...files];
+            refreshPreview();
+        }
+
+        async function savePhotosToDB() {
+            if (currentSelectedFiles.length === 0) {
+                alert('💖 Pilih foto dulu ya untuk menambah koleksi!');
+                return false;
+            }
+            
+            const confirmBtn = document.getElementById('confirmUploadBtn');
+            confirmBtn.disabled = true;
+            const originalText = confirmBtn.innerHTML;
+            confirmBtn.innerHTML = '<span class="loading-spinner"></span> Menyimpan...';
+            
+            try {
+                let successCount = 0;
+                for (let i = 0; i < currentSelectedFiles.length; i++) {
+                    const file = currentSelectedFiles[i];
+                    const dataUrl = await readFileAsDataURL(file);
+                    await addPhotoToDB({
+                        dataUrl: dataUrl,
+                        name: file.name,
+                        dateAdded: new Date().toISOString()
+                    });
+                    successCount++;
+                }
+                
+                currentSelectedFiles = [];
+                refreshPreview();
+                await renderGallery();
+                
+                alert(`🎉 ${successCount} foto baru berhasil dikoleksi ke D LOVE D! 🎉`);
+                return true;
+                
+            } catch (error) {
+                console.error('Error saving photos:', error);
+                alert('Maaf, terjadi kesalahan saat menyimpan foto. Silakan coba lagi.');
+                return false;
+            } finally {
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = originalText;
+            }
+        }
+
+        // Lightbox
+        function openLightbox(imageSrc) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.style.display = 'flex';
+            modalImg.src = imageSrc;
+        }
+        
+        function closeLightbox() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        // ======================== INITIALIZATION ========================
+        async function init() {
+            try {
+                await initDB();
+                await seedDefaultPhotos();
+                await renderGallery();
+                
+                // Setup event listeners
+                const fileInput = document.getElementById('fileInput');
+                const selectFileBtn = document.getElementById('selectFileBtn');
+                const uploadArea = document.getElementById('uploadArea');
+                const confirmBtn = document.getElementById('confirmUploadBtn');
+                
+                selectFileBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    fileInput.click();
+                });
+                
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.add('drag-over');
+                });
+                
+                uploadArea.addEventListener('dragleave', () => {
+                    uploadArea.classList.remove('drag-over');
+                });
+                
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.remove('drag-over');
+                    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+                    addFilesToPreview(files);
+                });
+                
+                fileInput.addEventListener('change', (e) => {
+                    const files = Array.from(e.target.files);
+                    addFilesToPreview(files);
+                    fileInput.value = '';
+                });
+                
+                confirmBtn.addEventListener('click', savePhotosToDB);
+                
+                // Modal close
+                const modal = document.getElementById('imageModal');
+                const closeSpan = document.querySelector('.close-modal');
+                closeSpan.addEventListener('click', closeLightbox);
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) closeLightbox();
+                });
+                
+                // Navbar smooth scroll
+                document.querySelectorAll('.navbar a').forEach(anchor => {
+                    anchor.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const targetId = this.getAttribute('href').substring(1);
+                        const targetEl = document.getElementById(targetId);
+                        if (targetEl) {
+                            targetEl.scrollIntoView({ behavior: 'smooth' });
+                        } else if (targetId === 'home') {
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
+                        document.querySelectorAll('.navbar a').forEach(a => a.classList.remove('active'));
+                        this.classList.add('active');
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Init error:', error);
+                document.getElementById('galleryContainer').innerHTML = 
+                    '<div class="empty-gallery"><i class="fas fa-database"></i><br/>Gagal menginisialisasi database. Silakan refresh halaman.</div>';
+            }
+        }
+        
+        // Start the app
+        init();
+    </script>
+</body>
+</html>
+```
