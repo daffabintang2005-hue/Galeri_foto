@@ -313,7 +313,7 @@
         async function seedDefaultPhotos() {
             const existingPhotos = await getAllPhotosFromDB();
             if (existingPhotos.length === 0) {
-                console.log('Menambahkan 20 foto default...');
+                console.log('Menambahkan foto default...');
                 for (let i = 0; i < DEFAULT_PHOTOS.length; i++) {
                     const photo = DEFAULT_PHOTOS[i];
                     await addPhotoToDB({
